@@ -9,5 +9,9 @@ import (
 
 func excludedByAttribute(attirbutes map[string][]byte) bool {
 	_, ok := attirbutes["duplicacy_exclude"]
+	if ok {
+		return true
+	}
+	_, ok = attirbutes["user.duplicacy_exclude"]
 	return ok
 }
