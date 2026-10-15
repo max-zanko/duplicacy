@@ -105,6 +105,30 @@ func TestMatchPattern(t *testing.T) {
 	}
 }
 
+func TestMatchPathRegexFilters(t *testing.T) {
+	// MatchPath should compile the regex body, without the i:/e: filter prefix.
+	// Clear both possible cache keys so this test also exercises compilation.
+	includeFilter := `i:^docs/[^/]+\.md$`
+	excludeFilter := `e:^private/`
+	delete(RegexMap, includeFilter)
+	delete(RegexMap, includeFilter[2:])
+	delete(RegexMap, excludeFilter)
+	delete(RegexMap, excludeFilter[2:])
+
+	if !MatchPath("docs/guide.md", []string{includeFilter}) {
+		t.Error("regex include filter did not include a matching path")
+	}
+	if MatchPath("docs/guide.txt", []string{includeFilter}) {
+		t.Error("regex include filter included a non-matching path")
+	}
+	if MatchPath("private/key.txt", []string{excludeFilter}) {
+		t.Error("regex exclude filter did not exclude a matching path")
+	}
+	if !MatchPath("public/key.txt", []string{excludeFilter}) {
+		t.Error("regex exclude filter excluded a non-matching path")
+	}
+}
+
 func TestRateLimit(t *testing.T) {
 	content := make([]byte, 100*1024)
 	_, err := crypto_rand.Read(content)

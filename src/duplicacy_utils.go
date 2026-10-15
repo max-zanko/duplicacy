@@ -364,7 +364,7 @@ func MatchPath(filePath string, patterns []string) (included bool) {
 			if re, found = RegexMap[pattern[2:]]; found {
 				matched = re.MatchString(filePath)
 			} else {
-				re, err := regexp.Compile(pattern)
+				re, err := regexp.Compile(pattern[2:])
 				if err != nil {
 					LOG_ERROR("REGEX_ERROR", "Invalid regex encountered for pattern \"%s\" - %v", pattern[2:], err)
 				}
